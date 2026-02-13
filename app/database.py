@@ -1,15 +1,19 @@
 import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-from dotenv import load_dotenv
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-load_dotenv()
-
+# 1. Get the URL from Koyeb
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+# 2. THE FIX: If the URL starts with 'postgres://', change it to 'postgresql://'
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
+# 3. Create the engine with the fixed URL
+engine = create_engine(DATABASE_URL)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def get_db():
