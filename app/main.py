@@ -1,4 +1,4 @@
-import os
+from sqlalchemy import text  
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from app.database import engine, Base, get_db  # Import from your database.py
@@ -22,8 +22,8 @@ def root():
 @app.get("/test-db")
 def test_connection(db: Session = Depends(get_db)):
     try:
-        # Just a simple query to see if the DB answers
-        result = db.execute("SELECT 1").fetchone()
+        # Wrap the query in the text() function
+        result = db.execute(text("SELECT 1")).fetchone() 
         return {"status": "connected", "database_response": result[0]}
     except Exception as e:
         return {"status": "error", "detail": str(e)}
